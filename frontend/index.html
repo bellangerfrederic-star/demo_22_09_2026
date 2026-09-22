@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr" >
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyDataQuality — Agent qualité de données pour pipelines IA</title>
+<meta name="description" content="POC front-end : analysez un dataset, détectez les anomalies, évaluez le risque de biais IA et générez les tickets de remédiation — entièrement dans le navigateur.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232a78d6'/><path d='M50 18 24 28v22c0 17 12 27 26 32 14-5 26-15 26-32V28z' fill='none' stroke='white' stroke-width='7' stroke-linejoin='round'/><path d='M38 50l9 9 17-18' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="#" onclick="return false;">
+      <span class="brand__mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand__name">MyDataQuality</span>
+        <span class="brand__sub">Agent qualité de données</span>
+      </span>
+    </a>
+    <span class="pill">POC v0.1 · front-end</span>
+    <span class="topbar__spacer"></span>
+    <button class="btn btn--icon btn--ghost" id="themeToggle" type="button" aria-label="Changer de thème"></button>
+  </div>
+</header>
+
+<!-- ============================== ACCUEIL ============================== -->
+<main>
+<section class="view is-active" id="view-home">
+  <div class="wrap">
+
+    <div class="hero">
+      <span class="eyebrow">Data Quality Agent for AI Pipelines</span>
+      <h1>Détectez les anomalies <em>avant</em> que l’IA ne les apprenne.</h1>
+      <p class="hero__lead">
+        Chargez un dataset : l’agent applique un catalogue de règles, détecte les anomalies statistiques,
+        calcule un score de qualité, mesure le risque de biais et génère les tickets de remédiation.
+      </p>
+      <div class="pipeline">
+        <span class="pipeline__step"><b>1</b> Ingestion</span>
+        <span class="pipeline__arrow">→</span>
+        <span class="pipeline__step"><b>2</b> Moteur de règles</span>
+        <span class="pipeline__arrow">→</span>
+        <span class="pipeline__step"><b>3</b> Détection d’anomalies</span>
+        <span class="pipeline__arrow">→</span>
+        <span class="pipeline__step"><b>4</b> Score &amp; reporting</span>
+        <span class="pipeline__arrow">→</span>
+        <span class="pipeline__step"><b>5</b> Tickets</span>
+      </div>
+    </div>
+
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer un fichier à analyser">
+      <div class="dropzone__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 16V4m0 0L7 9m5-5 5 5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+      </div>
+      <h3>Déposez votre fichier ici</h3>
+      <p>CSV, TSV ou JSON — ou cliquez pour parcourir vos fichiers.</p>
+      <div class="dropzone__actions">
+        <span class="btn btn--primary">Choisir un fichier</span>
+      </div>
+      <p class="dropzone__note">
+        🔒 Aucune donnée ne quitte votre navigateur : parsing, règles et score s’exécutent en local.
+      </p>
+      <input type="file" id="fileInput" class="sr-only" accept=".csv,.tsv,.json,.txt">
+    </div>
+
+    <div class="section">
+      <div class="section__head">
+        <h2>Jeux de démonstration</h2>
+        <p>Trois datasets réalistes, avec anomalies volontairement injectées.</p>
+      </div>
+      <div class="grid grid--3" id="samples"></div>
+    </div>
+
+    <div class="section">
+      <div class="section__head">
+        <h2>Trois agents, une chaîne de contrôle</h2>
+        <p>Décomposition fonctionnelle issue du PRD.</p>
+      </div>
+      <div class="grid grid--3">
+        <div class="card">
+          <div class="agent__badge">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div class="agent__role">Agent 1</div>
+          <div class="agent__name">Data Validator</div>
+          <p class="agent__desc">
+            Applique le catalogue de règles déclaré en JSON : valeurs nulles, unicité des clés,
+            formats, plages autorisées et référentiels de valeurs.
+          </p>
+        </div>
+        <div class="card">
+          <div class="agent__badge">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8A3 3 0 0 0 7 17a3 3 0 0 0 5 2 3 3 0 0 0 5-2 3 3 0 0 0 2-5.2A3 3 0 0 0 18 6a3 3 0 0 0-3-3 3 3 0 0 0-3 1.5A3 3 0 0 0 9 3z"/></svg>
+          </div>
+          <div class="agent__role">Agent 2</div>
+          <div class="agent__name">Data Analyst</div>
+          <p class="agent__desc">
+            Détecte les anomalies statistiques (valeurs aberrantes par écart interquartile),
+            explique chaque écart et mesure le déséquilibre des attributs sensibles.
+          </p>
+        </div>
+        <div class="card">
+          <div class="agent__badge">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+          </div>
+          <div class="agent__role">Agent 3</div>
+          <div class="agent__name">Report Generator</div>
+          <p class="agent__desc">
+            Calcule le score pondéré par dimension, hiérarchise les anomalies
+            et génère des tickets prêts à l’emploi (priorité, action, critère d’acceptation).
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== ANALYSE ============================== -->
+<section class="view" id="view-analysis">
+  <div class="wrap">
+    <div class="analysis">
+      <span class="eyebrow">Analyse en cours</span>
+      <h2 style="font-size:26px;margin-top:8px">L’agent inspecte votre dataset…</h2>
+      <p class="analysis__file" id="analysisFile"></p>
+      <ul class="steps" id="steps"></ul>
+      <div class="progress"><div class="progress__bar" id="progressBar"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== RAPPORT ============================== -->
+<section class="view" id="view-report">
+  <div class="wrap">
+
+    <div class="report__head">
+      <div>
+        <span class="eyebrow">Rapport de qualité</span>
+        <h1 style="font-size:26px;margin-top:6px" id="reportName"></h1>
+        <div class="report__meta" id="reportMeta"></div>
+      </div>
+      <div class="report__actions">
+        <button class="btn btn--sm" id="exportBtn" type="button">Exporter le JSON</button>
+        <button class="btn btn--sm" id="printBtn" type="button">Imprimer</button>
+        <button class="btn btn--sm btn--primary" id="newAnalysis" type="button">Nouvelle analyse</button>
+      </div>
+    </div>
+
+    <div class="grid grid--2-1">
+      <div class="card score-card" id="scoreCard"></div>
+      <div class="card" id="biasCard"></div>
+    </div>
+
+    <div class="grid grid--4" style="margin-top:16px" id="stats"></div>
+
+    <div class="section">
+      <div class="card">
+        <div class="card__head">
+          <span class="card__title">Qualité par dimension</span>
+          <span class="card__hint">score pondéré · survolez une dimension pour le détail</span>
+        </div>
+        <div class="dims" id="dims"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section__head">
+        <h2>Anomalies détectées</h2>
+        <p>Triées par sévérité — chaque anomalie est expliquée et accompagnée d’une correction.</p>
+        <span class="topbar__spacer"></span>
+        <span class="filters" id="issueFilters"></span>
+      </div>
+      <div class="issues" id="issues"></div>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <div class="card__head">
+          <span class="card__title">Santé par colonne</span>
+          <span class="table-tools">
+            <input class="input" id="colSearch" type="search" placeholder="Rechercher une colonne…" aria-label="Rechercher une colonne">
+          </span>
+        </div>
+        <div class="table-scroll">
+          <table class="dq">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section__head">
+        <h2>Tickets générés</h2>
+        <p>Remédiation priorisée, prête à être poussée dans un outil de suivi.</p>
+        <span class="topbar__spacer"></span>
+        <span class="card__hint" id="ticketCount"></span>
+      </div>
+      <div class="grid grid--2-1" id="tickets" style="grid-template-columns:repeat(auto-fill,minmax(330px,1fr))"></div>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <div class="card__head">
+          <span class="card__title">Catalogue de règles appliqué</span>
+          <span class="card__hint">défini en JSON — extensible sans toucher au moteur</span>
+        </div>
+        <div class="rules" id="rules"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;width:100%">
+    <span>MyDataQuality — POC front-end · Hackathon Capgemini <span id="year"></span></span>
+    <span>Analyse 100 % locale · aucune donnée transmise</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/rules.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/samples.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

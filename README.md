@@ -1,48 +1,46 @@
 # MyDataQuality — Data Quality Agent
 
-> **First release (v0.1) — UI prototype.** A static HTML mockup of the Data Quality Agent, showing the target user experience with hardcoded results. No backend or analysis logic yet.
+> **v0.2 — POC front-end interactif.** L'interface complète du Data Quality Agent,
+> exécutée entièrement dans le navigateur : parsing, moteur de règles, détection
+> d'anomalies, score, risque de biais et génération de tickets. Backend Python à venir.
 
 A hackathon project building a **Data Quality Agent for AI pipelines**: upload a dataset, detect anomalies, score quality, and surface bias risks before the data reaches an AI/ML pipeline.
 
-## What's in this release
+## Démarrer
 
-| File / folder | Purpose |
-|---|---|
-| `data-quality-agent__1_.html` | Standalone UI prototype — open it in a browser to walk through the planned flow. |
-| `DataSet/customers.xlsx` | Sample dataset: customer records (used to demo missing IDs, duplicates, invalid emails, country inconsistencies). |
-| `DataSet/patients.xlsx` | Sample dataset: patient records. |
-| `DataSet/transactions.xlsx` | Sample dataset: transaction records. |
-| `PRD_Data_Quality_Agent.docx` | Product Requirement Document — full vision and roadmap. |
-
-## Run the prototype
-
-No build step, no dependencies. Just open the HTML file in any modern browser:
+Aucune dépendance, aucun build :
 
 ```powershell
-Start-Process .\data-quality-agent__1_.html
+Start-Process .\frontend\index.html
 ```
 
-Then:
+Puis cliquez sur un des trois jeux de démonstration (Clients, Patients, Transactions),
+ou glissez-déposez votre propre CSV/JSON. Voir `frontend/README.md` pour le déroulé
+de démonstration et le détail du modèle de score.
 
-1. Click **Choose File** and pick one of the `.xlsx` files in `DataSet/`.
-2. Click **Run Analysis**.
-3. The mockup reveals a quality score (74/100), a quality gauge, badges, top issues, an interactive table, AI risk insight, and generated tickets.
+## Contenu du dépôt
 
-> The results are **hardcoded** in this release — uploading a different file will not change them. The prototype exists to validate the UX with stakeholders before the analysis engine is built.
+| Fichier / dossier | Rôle |
+|---|---|
+| `frontend/index.html` | POC front-end — accueil, chaîne d'agents animée, rapport de qualité. |
+| `frontend/assets/js/rules.js` | Catalogue de règles au format JSON (dimensions, seuils, référentiels). |
+| `frontend/assets/js/engine.js` | Moteur de qualité : parsing, profilage, règles, anomalies, score, tickets. |
+| `frontend/data/*.csv` | Trois jeux de données de démonstration, avec anomalies injectées. |
+| `PRD_Data_Quality_Agent.docx` | Product Requirement Document — vision et roadmap. |
 
-## What the UI shows
+## Ce que montre l'interface
 
-- **Quality Score** — overall data-quality rating out of 100.
-- **Quality Gauge** — circular indicator of the same score.
-- **Badges** — categories of detected problems (Missing Values, Duplicates, Format Issues).
-- **Top Issues** — plain-language list of the most impactful problems.
-- **Interactive Table** — per-column issue breakdown.
-- **AI Risk Insight** — flag when the dataset may bias a downstream AI model.
-- **Generated Tickets** — actionable items, prioritized, ready to send to a tracker.
+- **Score de qualité** — note pondérée sur 100 et verdict d'exploitabilité pour l'IA.
+- **Qualité par dimension** — complétude, unicité, validité, cohérence, exactitude.
+- **Risque de biais IA** — déséquilibre des attributs sensibles et distribution des modalités.
+- **Anomalies expliquées** — règle déclenchée, impact sur le modèle, correction proposée, exemples réels.
+- **Santé par colonne** — tableau triable : type, rôle détecté, manquants, anomalies, sévérité.
+- **Tickets générés** — priorité, action, critère d'acceptation, assignation, effort.
+- **Catalogue de règles** — les 16 règles évaluées et leur statut.
 
 ## Roadmap
 
-The next release will replace the hardcoded UI with a real engine, per the PRD:
+La prochaine étape remplace le moteur exécuté dans le navigateur par le moteur Python du PRD :
 
 - **Stack:** Python, Pandas, Streamlit, JSON-defined rules, optional LLM for explainability.
 - **Pipeline:** Frontend (Streamlit) → Data Quality Engine → Rule Engine + Anomaly Detection → Reporting.
